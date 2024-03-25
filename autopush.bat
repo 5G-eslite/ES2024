@@ -2,18 +2,18 @@
 
 :loop
 
-REM æ·»åŠ æ‰€æœ‰å˜æ›´
+REM ²K¥[©Ò¦³ÅÜ§ó
 git add .
 
-REM æäº¤æ›´æ”¹
+REM ´£¥æ§ó§ï
 git commit -m "Automatic commit"
 
-REM æŽ¨é€æ›´æ”¹
+REM ±À°e§ó§ï
 git push
 
 echo Push completed.
 
-echo Current time: %time% ç­‰å¾…60ç§’å¾Œå†æ¬¡ç™¼é€
+echo Current time: %time% µ¥«Ý60¬í«á¦A¦¸µo°e
 
 timeout /t 60 >nul
 
