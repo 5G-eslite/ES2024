@@ -1,0 +1,5 @@
+theme: jekyll-theme-slate
+include:
+  - "_*.html"
+  - "_*.js"
+  - "_*.*"
