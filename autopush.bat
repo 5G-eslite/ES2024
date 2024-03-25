@@ -1,5 +1,7 @@
 @echo off
 
+:loop
+
 REM 添加所有变更
 git add .
 
@@ -10,4 +12,7 @@ REM 推送更改
 git push
 
 echo Push completed.
-pause
+
+timeout /t 60 >nul
+
+goto loop
