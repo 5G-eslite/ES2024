@@ -13,8 +13,8 @@ git push
 
 echo Push completed.
 
-timeout /t 60 >nul
-
 echo Current time: %time% 等待60秒後再次發送
+
+timeout /t 60 >nul
 
 goto loop
