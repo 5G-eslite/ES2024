@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>誠品-獎品兌換券</title>
+
+    <style type="text/css">
+        <!--
+        body {
+            font: 200% Verdana, Arial, Helvetica, sans-serif;
+            background: #ffffff;
+            margin: 0; /* 比較好的做法是將 Body 元素的邊界與欄位間隔調整為零，以處理不同的瀏覽器預設值 */
+            padding: 0;
+            /*text-align: center; /* 這樣會讓容器在 IE 5* 瀏覽器內置中對齊。然後，文字會在 #container 選取器中設定為靠左對齊預設值 */
+            color: #000000;
+            height: 100%;
+        }
+
+        .tpre {
+            z-index: 100;
+            visibility: visible;
+            position: fixed;
+            background-color: #000000;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .tprect{
+            background-color: #ffffff;
+            font-size: 18px;
+            padding: 20px 40px;
+            border-radius: 15px;
+        }
+        .tprect input[type=tel] {
+            outline: 0;
+            border-width: 0 0 2px;
+            border-color: #7f4a06;
+            font-size:20px;
+            width: 100%;
+        }
+        /*.tprect input[type=text]:focus {
+            border-color: green;
+            outline: 1px dotted #000
+        }*/
+        .tprect input[type=radio] {
+            transform: scale(1.5);
+            margin-right: 10px;
+            accent-color: #7f4a06;
+        }
+        .tprect button {
+            float: right;
+            background-color: transparent;
+            padding: 5px 0px;
+            width: 110px;
+            cursor: pointer;
+            color: #7f4a06;
+            border: 0px;
+            font-size: 16px;
+        }
+        .tbody {
+            /*display: none;*/
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #ffffff;
+        }
+        .tbody img{
+            margin: 10px 0;
+        }
+        .tbody input[type=button]{
+            background-image:url(btn_staff.png);
+            width: 200px;
+            height: 75px;
+            border:0px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: transparent;
+        }
+        .tips {
+            
+            background-color: #333333;
+            color: #ffffff;
+            font-size: 16px;
+            padding: 20px;
+            line-height: 32px;
+        }
+
+        .submitbox{
+            visibility: hidden;
+            z-index: 5;
+            width: 100%;
+            height: 100%;            
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            /*opacity: 0.8;   for demo purpose  */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            line-height: 0px;
+            font-size: 16px;
+        }
+        .submitbox input[type=button]{
+            width: 200px;
+            height: 75px;
+            border:0px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: transparent;
+        }
+
+        .errorbox{
+            visibility: hidden;
+            z-index: 199;
+            width: 100%;
+            height: 100%;            
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            /*opacity: 0.8;   for demo purpose  */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            line-height: 0px;
+            font-size: 16px;
+        }
+        .errorbox input[type=button]{
+            width: 200px;
+            height: 100px;
+            border:0px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: transparent;
+        }
+        </style>
+</head>
+<body>
+
+    <div id="tpre" class="tpre">
+        <div class="tprect">
+            <p>請輸入你的手機號碼<br>Please enter your phone number</p>
+            
+            <p><input type="tel" id="inp_phone" maxlength="10" inputmode="tel" oninput="this.value = this.value.replace(/[^0-9]/g, '')"></p>
+            <p><input type="radio" name="year" value="1">我已年滿18歲 I am over 18 years old</p>
+            <p><input type="radio" name="year" value="0">我還未成年 I am under 18 years old</p>
+            <p style="color: dimgray;margin: 30px 0;">*本資料僅供優惠券個人化使用<br>For personalized coupon use only.</p>
+            <p><button onclick="btn_phone_years()" id="btn_quest_comfirm">確定 Comfirm</button><button onclick="btn_phone_years_skip()" id="btn_quest_skip">略過 Skip</button></p>
+        </div>
+    </div>
+
+    <div id="tbody" class="tbody">
+        <img src="ticket.jpg" width="100%" id="img_coupon">
+        <img src="tipa.png" width="75%">
+        <input type="button" onclick="btn_exchange()">
+        <img src="tipb.png" width="75%">
+        <div id="tips" class="tips">
+            
+        </div>
+    </div>
+
+    <div class="submitbox" id="submitbox">
+        <input type="button" onclick="btn_conform()" style="background-image:url(btn_confirm.png);" id="btn_conform">
+        <input type="button" style="background-image:url(btn_complete.png); display: none;" id="btn_fin">
+        <p>此頁面由服務人員進行操作</p>
+        <p>This page is opperated by staff.</p>
+    </div>
+
+    <div class="errorbox" id="errorbox">
+        <input type="button" style="background-image:url(btn_error.png);">
+        <p>此優惠券已經使用</p>
+    </div>
+    
+    <script>
+        const serverUrl = 'https://script.google.com/macros/s/AKfycbx4J530xzqvFrCVWEyi-Ya1zN45hhC1P2lmsvRtUCEXt7HoNDXeiCBY0j_7_I0lOxz-/exec';
+        const jsonUrl = 'https://script.google.com/macros/s/AKfycbyIYCcDKLRQx2gAXEQlQRs_aWby_T3U6ZQS4yc9BJi8UKdC37sJifeXBhxhC_DAAAlQyQ/exec';
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const ticketid = urlParams.get('tid');
+        const ticketclass = urlParams.get('type');
+        console.log(ticketid);
+        console.log(ticketclass);
+
+        // fetch('content.txt')
+        // .then(response => response.text())
+        // .then(text => {
+        //     document.getElementById('tips').innerHTML = text;
+        // })
+
+        memoryPage();
+
+        function memoryPage(){
+            let url = serverUrl + '?tid=' + ticketid + '&lock=1';
+            httpGetAsync(url, memoryCallback);
+
+            let m = localStorage.getItem(ticketid+'-'+'data');
+            if(m != null){
+                let tdata = JSON.parse(m);
+                document.getElementById('img_coupon').src = 'coupon/' + tdata.tname + '.jpg';
+                document.getElementById('tips').innerHTML = tdata.ttip;
+
+                var x = document.getElementById("tpre");
+                x.style.visibility = "hidden";
+            }
+        }
+
+        function memoryCallback(result){
+            if(result == 'ok' || localStorage.getItem(ticketid+'-'+'lock') != undefined){
+                localStorage.setItem(ticketid+'-'+'lock', 1);
+            } else {
+                let err = document.querySelector('#errorbox');
+                err.style.visibility = "visible";
+            }
+        }
+
+        function btn_phone_years_skip(){
+            check_phone_years(0, '0000');
+            document.querySelector('#btn_quest_comfirm').style.visibility = "hidden";
+            document.querySelector('#btn_quest_skip').style.visibility = "hidden";
+        }
+
+        function btn_phone_years(){
+            let phone = document.querySelector('#inp_phone').value;
+            if(phone == null || phone == "" || phone.length < 9){
+                alert('請輸入正確的手機號碼');
+                return;
+            }
+            let check = document.querySelector('input[name=year]:checked');
+            if(check == null){
+                alert('請勾選年齡');
+                return;
+            }
+            check_phone_years(check.value, phone);
+            document.querySelector('#btn_quest_comfirm').style.visibility = "hidden";
+            document.querySelector('#btn_quest_skip').style.visibility = "hidden";
+        }
+
+        function check_phone_years(check, phone){
+            let url = jsonUrl + '?tclass=' + ticketclass + '&age=' + check;
+            localStorage.setItem('memory_phone', phone);
+            localStorage.setItem('memory_age', check);
+
+            console.log(url);
+            httpGetAsync(url, jsonCallback);
+        }
+
+        function jsonCallback(result){
+            console.log(result);
+
+            var jsonObject = JSON.parse(result);
+            var dataArray = [];
+            for (var i = 0; i < jsonObject.data.length; i++) {
+                var tname = jsonObject.data[i].tname;
+                var ttip = jsonObject.data[i].ttip;
+                dataArray.push({ tname: tname, ttip: ttip });
+            }
+
+            console.log(dataArray);
+            
+            //取得隨機票券
+            let memory_phone = localStorage.getItem('memory_phone');
+            let randomMax = dataArray.length;
+            let rand = 0;
+            for (let i = 0; i < 999; i++) {
+                rand = Math.floor(Math.random() * (randomMax));
+                if(localStorage.getItem(memory_phone+'-'+rand) == 1){
+                    continue;
+                }
+                break;
+            }
+            //儲存已得隨機數值
+            localStorage.setItem(memory_phone+'-'+rand, 1);
+
+            //顯示已得票券
+            resultTicket = dataArray[rand];
+            document.getElementById('img_coupon').src = 'coupon/' + resultTicket.tname + '.jpg';
+            document.getElementById('tips').innerHTML = resultTicket.ttip;
+            
+            //暫存已得票券
+            localStorage.setItem(ticketid+'-'+'data', JSON.stringify(resultTicket));
+
+            //隱藏詢問畫面
+            var x = document.getElementById("tpre");
+            x.style.visibility = "hidden";
+
+            //console.log('phone: ' + memory_phone + ' data: ' + resultTicket);
+        }
+
+        function btn_exchange() {
+            var sub = document.querySelector('#submitbox');
+            sub.style.visibility = "visible";
+        }
+
+        function btn_conform(){
+            let tdata = JSON.parse(localStorage.getItem(ticketid+'-'+'data'));
+            let phone = localStorage.getItem('memory_phone');
+            let age = localStorage.getItem('memory_age');
+            let url = serverUrl + '?tid=' + ticketid + '&tname=' + tdata.tname +  '&phone=' + phone + '&age=' + age;
+
+            httpGetAsync(url, servercallback);
+
+            document.querySelector('#btn_conform').style.display = 'none';
+            console.log(url);
+        }
+
+        function servercallback(result){
+            let fin = document.querySelector('#btn_fin');
+
+            let sub = document.querySelector('#submitbox');
+            let err = document.querySelector('#errorbox');
+            if(result == 'ok'){
+                fin.style.display = 'block';
+                console.log('server: ' + result);
+            } else {
+                sub.style.visibility = "hidden";
+                err.style.visibility = "visible";
+                console.log('server: ' + result);
+            }
+        }
+
+        function httpGetAsync(theUrl, callback)
+        {
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function() {
+                if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+                    callback(xmlHttp.responseText);
+            };
+            xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+            xmlHttp.send(null);
+        }
+        
+    </script>
+</body>
+</html>
