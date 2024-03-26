@@ -16,11 +16,12 @@ git commit -m "Automatic commit"
 REM >>push changes.
 git push
 
+echo.
+echo.
 echo Push completed.
 
 echo Current time: %time% wait 60 sec to update again
 
-@echo on
-ping 127.0.0.1 -n 60 -w 1000
+ping 127.0.0.1 -n 60 -w 1000 >nul
 
 goto loop
