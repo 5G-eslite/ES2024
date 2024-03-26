@@ -192,6 +192,8 @@
         console.log(ticketid);
         console.log(ticketclass);
 
+        var clickNum = 0;
+
         // fetch('content.txt')
         // .then(response => response.text())
         // .then(text => {
@@ -298,6 +300,8 @@
         }
 
         function btn_exchange() {
+            clickNum++;
+            if(clickNum < 5) return;
             var sub = document.querySelector('#submitbox');
             sub.style.visibility = "visible";
         }
