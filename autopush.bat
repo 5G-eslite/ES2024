@@ -2,19 +2,25 @@
 
 :loop
 
-REM 添加所有變更
+REM >>fetch project.
+git fetch
+
+REM >>pull project.
+git pull
+
+REM >>add all changes.
 git add .
 
-REM 提交更改
+REM >>commit changes.
 git commit -m "Automatic commit"
 
-REM 推送更改
+REM >>push changes.
 git push
 
 echo Push completed.
 
-echo Current time: %time% 等待60秒後再次發送
+echo Current time: %time% wait 60 sec to update again
 
-timeout /t 60 >nul
+ping 127.0.0.1 -n 60 -w 1000
 
 goto loop
