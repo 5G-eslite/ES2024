@@ -1,6 +1,5 @@
-@echo off
-
 :loop
+@echo off
 
 REM >>fetch project.
 git fetch
@@ -21,6 +20,7 @@ echo Push completed.
 
 echo Current time: %time% wait 60 sec to update again
 
+@echo on
 ping 127.0.0.1 -n 60 -w 1000
 
 goto loop
