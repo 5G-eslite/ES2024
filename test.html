@@ -64,8 +64,14 @@
             /*display: none;*/
             display: flex;
             flex-direction: column;
-            align-items: center;
+            
             background-color: #ffffff;
+            margin: 0 auto;
+        }
+        .otherimgs {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .tbody img{
             margin: 10px 0;
@@ -81,12 +87,12 @@
             background-color: transparent;
         }
         .tips,.tipstime {
-            
             background-color: #333333;
             color: #ffffff;
             font-size: 16px;
             padding: 20px;
             line-height: 32px;
+            /* text-align: center; */
         }
 
         .submitbox{
@@ -163,9 +169,11 @@
     <div id="tbody" class="tbody">
         <img src="ticket.jpg" width="100%" id="img_coupon" style="margin:0;">
         <div id="tipstime" class="tipstime"></div>
-        <img src="tipa.png" width="75%">
-        <input type="button" onclick="btn_exchange()">
-        <img src="tipb.png" width="75%">
+        <div class="otherimgs">
+            <img src="tipa.png" width="75%">
+            <input type="button" onclick="btn_exchange()">
+            <img src="tipb.png" width="75%">
+        </div>
         <div id="tips" class="tips">
             
         </div>
