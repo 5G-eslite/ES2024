@@ -192,16 +192,19 @@
     </div>
     
     <script>
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const ticketid = urlParams.get('name');
 
         var clickNum = 0;
 
-        fetch('coupon/testa.txt')
+        fetch('coupon/' + ticketid + '1.txt')
         .then(response => response.text())
         .then(text => {
             document.getElementById('tipstime').innerHTML = text;
         })
 
-        fetch('coupon/testb.txt')
+        fetch('coupon/' + ticketid + '2.txt')
         .then(response => response.text())
         .then(text => {
             document.getElementById('tips').innerHTML = text;
@@ -231,7 +234,7 @@
 
         function check_phone_years(check, phone){
             
-            document.getElementById('img_coupon').src = 'coupon/test.jpg';
+            document.getElementById('img_coupon').src = 'coupon/' + ticketid + '.jpg';
 
             //隱藏詢問畫面
             var x = document.getElementById("tpre");
