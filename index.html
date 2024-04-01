@@ -64,8 +64,14 @@
             /*display: none;*/
             display: flex;
             flex-direction: column;
-            align-items: center;
+            
             background-color: #ffffff;
+            margin: 0 auto;
+        }
+        .otherimgs {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .tbody img{
             margin: 10px 0;
@@ -80,13 +86,13 @@
             background-position: center;
             background-color: transparent;
         }
-        .tips {
-            
+        .tinfo,.trule {
             background-color: #333333;
             color: #ffffff;
             font-size: 16px;
             padding: 20px;
             line-height: 32px;
+            /* text-align: center; */
         }
 
         .submitbox{
@@ -161,13 +167,14 @@
     </div>
 
     <div id="tbody" class="tbody">
-        <img src="ticket.jpg" width="100%" id="img_coupon">
-        <img src="tipa.png" width="75%">
-        <input type="button" onclick="btn_exchange()">
-        <img src="tipb.png" width="75%">
-        <div id="tips" class="tips">
-            
+        <img src="ticket.jpg" width="100%" id="img_coupon" style="margin:0;">
+        <div id="tinfo" class="tinfo"></div>
+        <div class="otherimgs">
+            <img src="tipa.png" width="75%">
+            <input type="button" onclick="btn_exchange()">
+            <img src="tipb.png" width="75%">
         </div>
+        <div id="trule" class="trule"></div>
     </div>
 
     <div class="submitbox" id="submitbox">
@@ -201,7 +208,8 @@
         // })
 
         memoryPage();
-
+        
+        //先傳 tid 與 lock 資訊確認回傳
         function memoryPage(){
             let url = serverUrl + '?tid=' + ticketid + '&lock=1';
             httpGetAsync(url, memoryCallback);
@@ -210,7 +218,8 @@
             if(m != null){
                 let tdata = JSON.parse(m);
                 document.getElementById('img_coupon').src = 'coupon/' + tdata.tname + '.jpg';
-                document.getElementById('tips').innerHTML = tdata.ttip;
+                document.getElementById('tinfo').innerHTML = tdata.tinfo;
+                document.getElementById('trule').innerHTML = tdata.trule;
 
                 var x = document.getElementById("tpre");
                 x.style.visibility = "hidden";
@@ -264,8 +273,9 @@
             var dataArray = [];
             for (var i = 0; i < jsonObject.data.length; i++) {
                 var tname = jsonObject.data[i].tname;
-                var ttip = jsonObject.data[i].ttip;
-                dataArray.push({ tname: tname, ttip: ttip });
+                var tinfo = jsonObject.data[i].tinfo;
+                var trule = jsonObject.data[i].trule;
+                dataArray.push({ tname: tname, tinfo: tinfo, trule: trule });
             }
 
             console.log(dataArray);
@@ -287,7 +297,8 @@
             //顯示已得票券
             resultTicket = dataArray[rand];
             document.getElementById('img_coupon').src = 'coupon/' + resultTicket.tname + '.jpg';
-            document.getElementById('tips').innerHTML = resultTicket.ttip;
+            document.getElementById('tinfo').innerHTML = resultTicket.tinfo;
+            document.getElementById('trule').innerHTML = resultTicket.trule;
             
             //暫存已得票券
             localStorage.setItem(ticketid+'-'+'data', JSON.stringify(resultTicket));
