@@ -295,7 +295,7 @@
             localStorage.setItem(memory_phone+'-'+rand, 1);
 
             //顯示已得票券
-            resultTicket = dataArray[rand];
+            let resultTicket = dataArray[rand];
             document.getElementById('img_coupon').src = 'coupon/' + resultTicket.tname + '.jpg';
             document.getElementById('tinfo').innerHTML = resultTicket.tinfo;
             document.getElementById('trule').innerHTML = resultTicket.trule;
@@ -308,6 +308,12 @@
             x.style.visibility = "hidden";
 
             //console.log('phone: ' + memory_phone + ' data: ' + resultTicket);
+
+            let tdata = resultTicket.tname;
+            let phone = localStorage.getItem('memory_phone');
+            let age = localStorage.getItem('memory_age');
+            let kpi = serverUrl + '?tid=' + ticketid + '&tname=' + tdata +  '&phone=' + phone + '&age=' + age + '&kpi=1';
+            httpGetAsync(kpi, function (){});
         }
 
         function btn_exchange() {
