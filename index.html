@@ -86,7 +86,15 @@
             background-position: center;
             background-color: transparent;
         }
-        .tinfo,.trule {
+
+        .ttitle {
+            background-color: #696159;
+            color: #ffffff;
+            font-size: 20px;
+            padding: 0 20px;
+        }
+
+        .tinfo, .trule {
             background-color: #333333;
             color: #ffffff;
             font-size: 20px;
@@ -168,6 +176,7 @@
 
     <div id="tbody" class="tbody">
         <img src="ticket.jpg" width="100%" id="img_coupon" style="margin:0;">
+        <div id="ttitle" class="ttitle"></div>
         <div id="tinfo" class="tinfo"></div>
         <div class="otherimgs">
             <img src="tipa.png" width="75%">
@@ -217,7 +226,10 @@
             if(m != null){
                 let tdata = JSON.parse(m);
                 document.getElementById('img_coupon').src = 'coupon/' + tdata.tname + '.jpg';
-                document.getElementById('tinfo').innerHTML = tdata.tinfo;
+
+                var t_result = extractFirstLine(tdata.tinfo);
+                document.getElementById('ttitle').innerHTML = t_result.firstLine;
+                document.getElementById('tinfo').innerHTML = t_result.remainingText;
                 document.getElementById('trule').innerHTML = tdata.trule;
 
                 var x = document.getElementById("tpre");
@@ -296,7 +308,9 @@
             //顯示已得票券
             let resultTicket = dataArray[rand];
             document.getElementById('img_coupon').src = 'coupon/' + resultTicket.tname + '.jpg';
-            document.getElementById('tinfo').innerHTML = resultTicket.tinfo;
+            var t_result = extractFirstLine(resultTicket.tinfo);
+            document.getElementById('ttitle').innerHTML = t_result.firstLine;
+            document.getElementById('tinfo').innerHTML = t_result.remainingText;
             document.getElementById('trule').innerHTML = resultTicket.trule;
             
             //暫存已得票券
@@ -358,6 +372,25 @@
             };
             xmlHttp.open("GET", theUrl, true); // true for asynchronous 
             xmlHttp.send(null);
+        }
+
+        function getFirstLine(text) {
+            // 使用正則表達式尋找第一行文字
+            var firstLine = text.match(/^.*$/m)[0];
+            return firstLine;
+        }
+
+        function extractFirstLine(text) {
+            // 以換行符分割文本
+            var lines = text.split("\n");
+            
+            // 提取第一行文字
+            var firstLine = lines[0].trim();
+
+            // 剔除第一行文字後的內容
+            var remainingText = lines.slice(1).join("\n").trim();
+
+            return { firstLine: firstLine, remainingText: remainingText };
         }
         
     </script>
