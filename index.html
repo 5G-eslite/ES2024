@@ -204,8 +204,10 @@
         const urlParams = new URLSearchParams(queryString);
         const ticketid = urlParams.get('tid');
         const ticketclass = urlParams.get('type');
+        const ticketQR = urlParams.get('qr');
         console.log(ticketid);
         console.log(ticketclass);
+        console.log(ticketQR);
 
         var clickNum = 0;
 
@@ -219,6 +221,16 @@
         
         //先傳 tid 與 lock 資訊確認回傳
         function memoryPage(){
+            if(ticketQR != null){
+                var x = document.getElementById("tpre");
+                x.style.visibility = "hidden";
+
+                let url = jsonUrl + '?qr=' + ticketQR;
+                httpGetAsync(url, jsonCallbackQR);
+
+                return;
+            }
+            
             let url = serverUrl + '?tid=' + ticketid + '&lock=1';
             httpGetAsync(url, memoryCallback);
 
@@ -329,6 +341,24 @@
             httpGetAsync(kpi, function (){});
         }
 
+        function jsonCallbackQR(result){
+            console.log(result);
+            var jsonObject = JSON.parse(result);
+            var dataArray = [];
+            for (var i = 0; i < jsonObject.data.length; i++) {
+                var tname = jsonObject.data[i].tname;
+                var tinfo = jsonObject.data[i].tinfo;
+                var trule = jsonObject.data[i].trule;
+                dataArray.push({ tname: tname, tinfo: tinfo, trule: trule });
+            }
+
+            //顯示已得票券
+            resultTicket = dataArray[0];
+            document.getElementById('img_coupon').src = 'coupon/' + resultTicket.tname + '.jpg';
+            document.getElementById('tinfo').innerHTML = resultTicket.tinfo;
+            document.getElementById('trule').innerHTML = resultTicket.trule;
+        }
+
         function btn_exchange() {
             clickNum++;
             if(clickNum < 5) return;
@@ -337,6 +367,12 @@
         }
 
         function btn_conform(){
+            if(ticketQR != null){
+                document.querySelector('#btn_conform').style.display = 'none';
+                let fin = document.querySelector('#btn_fin');
+                fin.style.display = 'block';
+                return;
+            }
             let tdata = JSON.parse(localStorage.getItem(ticketid+'-'+'data'));
             let phone = localStorage.getItem('memory_phone');
             let age = localStorage.getItem('memory_age');
@@ -391,6 +427,33 @@
             var remainingText = lines.slice(1).join("\n").trim();
 
             return { firstLine: firstLine, remainingText: remainingText };
+        }
+
+        async function submitForm(url, ) {
+            // Create a FormData object
+            const formData = new FormData();
+
+            // Add data to the FormData object
+            formData.append('name', 'John Doe');
+            formData.append('email', 'john.doe@example.com');
+
+            try {
+                // Send the POST request
+                const response = await fetch('url', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                // Check if the response is OK
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Success:', data);
+                } else {
+                    console.error('Error:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
         }
         
     </script>
