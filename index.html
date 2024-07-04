@@ -355,7 +355,9 @@
             //顯示已得票券
             resultTicket = dataArray[0];
             document.getElementById('img_coupon').src = 'coupon/' + resultTicket.tname + '.jpg';
-            document.getElementById('tinfo').innerHTML = resultTicket.tinfo;
+            var t_result = extractFirstLine(resultTicket.tinfo);
+            document.getElementById('ttitle').innerHTML = t_result.firstLine;
+            document.getElementById('tinfo').innerHTML = t_result.remainingText;
             document.getElementById('trule').innerHTML = resultTicket.trule;
         }
 
