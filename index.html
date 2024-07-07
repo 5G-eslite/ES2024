@@ -200,6 +200,7 @@
     <script>
         const serverUrl = 'https://script.google.com/macros/s/AKfycby10p-nOhkhdDRxNmDPYazPl5brEWtlKSkwy0PCXF0c8qjAljBlPj-Sqwl1ge4gjyIAuw/exec';
         const jsonUrl = 'https://script.google.com/macros/s/AKfycbwAbXq5wp141vaHh4W0Sq25exDWb7shFfr-KrG56rq9t86YO8-u0-RGDCOAdsJioRxnuQ/exec';
+        const qrPostUrl = 'https://docs.google.com/forms/u/0/d/e/1FAIpQLSfhbvHhY2vEU79WEqQySozACoDFk5m737XyKPd--elMng10Ag/formResponse';
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         const ticketid = urlParams.get('tid');
@@ -209,8 +210,18 @@
         console.log(ticketclass);
         console.log(ticketQR);
 
+        const entryPrefix = 'entry.';
+        const entrys = ['786305634', '1710733312', '1234599792', '2403680', '2137018284'];
+        const qrUuidPrefix = 'QR-Uuid-';
+        const qrProductPrefix = 'QR-product-';
+
         var clickNum = 0;
 
+        //QR專用變數
+        var updateForm = false;
+        var qrUuid = generateUUID();
+        var qrProduct = '';
+        
         // fetch('content.txt')
         // .then(response => response.text())
         // .then(text => {
@@ -221,19 +232,27 @@
         
         //先傳 tid 與 lock 資訊確認回傳
         function memoryPage(){
+            //如果是QR立牌
             if(ticketQR != null){
-                var x = document.getElementById("tpre");
-                x.style.visibility = "hidden";
+                //檢查是否為初次開啟
+                if(localStorage.getItem(qrUuidPrefix+ticketQR) == undefined){
+                    updateForm = true;
+                } else {
+                    var x = document.getElementById("tpre");
+                    x.style.visibility = "hidden";
+                    updateForm = false;
 
-                let url = jsonUrl + '?qr=' + ticketQR;
-                httpGetAsync(url, jsonCallbackQR);
-
+                    let urlqr = jsonUrl + '?qr=' + ticketQR;
+                    httpGetAsync(urlqr, jsonCallbackQR);
+                }
                 return;
             }
             
+            //檢查該券是不是第一次開啟,是的話紀錄已開啟的手機
             let url = serverUrl + '?tid=' + ticketid + '&lock=1';
             httpGetAsync(url, memoryCallback);
 
+            //讀取上次該券的內容
             let m = localStorage.getItem(ticketid+'-'+'data');
             if(m != null){
                 let tdata = JSON.parse(m);
@@ -249,6 +268,7 @@
             }
         }
 
+        //檢查該券是不是第一次開啟,是的話紀錄已開啟的手機
         function memoryCallback(result){
             if(result == 'ok' || localStorage.getItem(ticketid+'-'+'lock') != undefined){
                 localStorage.setItem(ticketid+'-'+'lock', 1);
@@ -286,6 +306,13 @@
             localStorage.setItem('memory_age', check);
 
             console.log(url);
+            
+            //如果是QR立牌
+            if(ticketQR != null){
+                let urlqr = jsonUrl + '?qr=' + ticketQR;
+                httpGetAsync(urlqr, jsonCallbackQR);
+                return;
+            }
             httpGetAsync(url, jsonCallback);
         }
 
@@ -352,6 +379,9 @@
                 dataArray.push({ tname: tname, tinfo: tinfo, trule: trule });
             }
 
+            var x = document.getElementById("tpre");
+            x.style.visibility = "hidden";
+
             //顯示已得票券
             resultTicket = dataArray[0];
             document.getElementById('img_coupon').src = 'coupon/' + resultTicket.tname + '.jpg';
@@ -359,6 +389,22 @@
             document.getElementById('ttitle').innerHTML = t_result.firstLine;
             document.getElementById('tinfo').innerHTML = t_result.remainingText;
             document.getElementById('trule').innerHTML = resultTicket.trule;
+
+            qrProduct = resultTicket.tname;
+            if(localStorage.getItem(qrProductPrefix+ticketQR) == qrProduct){
+                let err = document.querySelector('#errorbox');
+                err.style.visibility = "visible";
+            } else {
+                if(localStorage.getItem(qrProductPrefix+ticketQR) != undefined){
+                    updateForm = true;
+                }
+            }
+
+            if(updateForm){
+                //紀錄已開啟, 分配UUID
+                localStorage.setItem(qrUuidPrefix+ticketQR, qrUuid);
+                submitForm(qrPostUrl);
+            }
         }
 
         function btn_exchange() {
@@ -373,6 +419,10 @@
                 document.querySelector('#btn_conform').style.display = 'none';
                 let fin = document.querySelector('#btn_fin');
                 fin.style.display = 'block';
+                localStorage.setItem(qrProductPrefix+ticketQR, qrProduct);
+                let qrUuid = localStorage.getItem(qrUuidPrefix+ticketQR);
+                let kpi = serverUrl + '?tid=' + qrUuid + '&qr=1';
+                httpGetAsync(kpi, function (){});
                 return;
             }
             let tdata = JSON.parse(localStorage.getItem(ticketid+'-'+'data'));
@@ -431,28 +481,39 @@
             return { firstLine: firstLine, remainingText: remainingText };
         }
 
-        async function submitForm(url, ) {
+        function generateUUID() {
+            // 生成UUID
+            let uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0,
+                    v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+            
+            // 转换为大写
+            return uuid.toUpperCase();
+        }
+
+        async function submitForm(url) {
             // Create a FormData object
             const formData = new FormData();
 
+            let age = (localStorage.getItem('memory_age') == 0) ? '<18' : '>18';
+
             // Add data to the FormData object
-            formData.append('name', 'John Doe');
-            formData.append('email', 'john.doe@example.com');
+            formData.append(entryPrefix+entrys[0], qrUuid);
+            formData.append(entryPrefix+entrys[1], qrProduct);
+            formData.append(entryPrefix+entrys[2], localStorage.getItem('memory_phone'));
+            formData.append(entryPrefix+entrys[3], age);
+            formData.append(entryPrefix+entrys[4], '');
 
             try {
                 // Send the POST request
-                const response = await fetch('url', {
+                const response = await fetch(url, {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    mode: 'no-cors'
                 });
 
-                // Check if the response is OK
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('Success:', data);
-                } else {
-                    console.error('Error:', response.statusText);
-                }
             } catch (error) {
                 console.error('Error:', error);
             }
