@@ -198,9 +198,9 @@
     </div>
     
     <script>
-        const serverUrl = 'https://script.google.com/macros/s/AKfycby10p-nOhkhdDRxNmDPYazPl5brEWtlKSkwy0PCXF0c8qjAljBlPj-Sqwl1ge4gjyIAuw/exec';
-        const jsonUrl = 'https://script.google.com/macros/s/AKfycbwAbXq5wp141vaHh4W0Sq25exDWb7shFfr-KrG56rq9t86YO8-u0-RGDCOAdsJioRxnuQ/exec';
-        const qrPostUrl = 'https://docs.google.com/forms/u/0/d/e/1FAIpQLSfhbvHhY2vEU79WEqQySozACoDFk5m737XyKPd--elMng10Ag/formResponse';
+        const serverUrl = 'https://script.google.com/macros/s/AKfycby10p-nOhkhdDRxNmDPYazPl5brEWtlKSkwy0PCXF0c8qjAljBlPj-Sqwl1ge4gjyIAuw/exec';     //Copy of ES_Ticket_User_Get    
+        const jsonUrl = 'https://script.google.com/macros/s/AKfycbwAbXq5wp141vaHh4W0Sq25exDWb7shFfr-KrG56rq9t86YO8-u0-RGDCOAdsJioRxnuQ/exec';       //Copy of ES_GetTicketJson
+        const qrPostUrl = 'https://docs.google.com/forms/u/0/d/e/1FAIpQLSfhbvHhY2vEU79WEqQySozACoDFk5m737XyKPd--elMng10Ag/formResponse';            //Google Form
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         const ticketid = urlParams.get('tid');
@@ -303,7 +303,8 @@
         }
 
         function check_phone_years(check, phone){
-            let url = jsonUrl + '?n=' + tname;
+            let url = jsonUrl + '?tclass=' + ticketclass + '&age=' + check;
+            //let url = jsonUrl + '?n=' + tname;        //2024.10.24 更改回綜合票券取1
             localStorage.setItem('memory_phone', phone);
             localStorage.setItem('memory_age', check);
 
@@ -315,7 +316,8 @@
                 httpGetAsync(urlqr, jsonCallbackQR);
                 return;
             }
-            httpGetAsync(url, jsonCallbackOnlyOne);
+            httpGetAsync(url, jsonCallback);
+            //httpGetAsync(url, jsonCallbackOnlyOne);   //2024.10.24 更改回綜合票券取1
         }
 
         function jsonCallbackOnlyOne(result){
