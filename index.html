@@ -304,7 +304,12 @@
 
         function check_phone_years(check, phone){
             let url = jsonUrl + '?tclass=' + ticketclass + '&age=' + check;
-            //let url = jsonUrl + '?n=' + tname;        //2024.10.24 更改回綜合票券取1
+            let workfunc = jsonCallback;
+            if(tname != 'none'){
+                url = jsonUrl + '?n=' + tname;        //2024.10.24 更改回綜合票券取1
+                workfunc = jsonCallbackOnlyOne;       //2024.10.24 更改回綜合票券取1
+            }
+
             localStorage.setItem('memory_phone', phone);
             localStorage.setItem('memory_age', check);
 
@@ -316,8 +321,7 @@
                 httpGetAsync(urlqr, jsonCallbackQR);
                 return;
             }
-            httpGetAsync(url, jsonCallback);
-            //httpGetAsync(url, jsonCallbackOnlyOne);   //2024.10.24 更改回綜合票券取1
+            httpGetAsync(url, workfunc);
         }
 
         function jsonCallbackOnlyOne(result){
